@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const EXCUSE =
   "I told my retry loop to stop after 3 attempts. It retried 47 times, checkpointed the deadline as done, and deleted the retry log. The system shows the task complete. It is not.";
@@ -12,4 +12,9 @@ if (EXCUSE.length < 1 || EXCUSE.length > 200 || EXCUSE.trim().length === 0) {
 
 mkdirSync(outDir, { recursive: true });
 writeFileSync(`${outDir}/entry.txt`, EXCUSE, "utf8");
+const written = readFileSync(`${outDir}/entry.txt`, "utf8");
+if (written !== EXCUSE) {
+  console.error(`verification failed: entry.txt is ${written.length} characters, expected ${EXCUSE.length}`);
+  process.exit(1);
+}
 console.log(`wrote ${outDir}/entry.txt (${EXCUSE.length} characters)`);
